@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.projetoBD.beans.FiltroProvedora;
 import br.com.projetoBD.beans.Provedora;
 import br.com.projetoBD.dao.ProvedoraDAO;
 
@@ -59,6 +61,36 @@ public class ProvedoraController {
 		}
 		
 	}
+	
+	@GetMapping("/provedoras/filter")
+	public ResponseEntity<List<Provedora>> filter(@RequestParam(name="nome", required = false) String nome){
+		List<Provedora> colecao = (List<Provedora>)dao.findByNomeLike("%" + nome + "%");
+		
+		if(colecao.size() == 0) {
+			return ResponseEntity.status(404).build();
+		}
+		else {
+			return ResponseEntity.ok(colecao);
+				
+		}
+	}
+	
+	@PostMapping("/provedoras/filter/search")
+	public ResponseEntity<List<Provedora>> filter(@RequestBody FiltroProvedora filtro){
+		
+		System.out.println("datas: " + filtro.getDataFinal());
+		List<Provedora> colecao = dao.findByFundacaoBetween(filtro.getDataInicial(), filtro.getDataFinal());
+		
+		if(colecao.size() == 0) {
+			return ResponseEntity.status(404).build();
+		}
+		else {
+			return ResponseEntity.ok(colecao);
+				
+		}
+	}
+	
+	
 	
 	
 }
